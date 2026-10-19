@@ -28,4 +28,24 @@ class Insumo {
       costoEnvase: costoEnvase ?? this.costoEnvase,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'nombre': nombre,
+      'cantidadEnvase': cantidadEnvase,
+      'unidad': unidad,
+      'costoEnvase': costoEnvase,
+    };
+  }
+
+  factory Insumo.fromJson(Map<String, dynamic> json) {
+    return Insumo(
+      id: json['id'],
+      nombre: json['nombre'],
+      cantidadEnvase: (json['cantidadEnvase'] as num).toDouble(),
+      unidad: json['unidad'],
+      costoEnvase: (json['costoEnvase'] as num).toDouble(),
+    );
+  }
 }
