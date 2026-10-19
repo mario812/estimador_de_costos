@@ -12,10 +12,14 @@ class DetalleProductoScreen extends StatefulWidget {
 }
 
 class _DetalleProductoScreenState extends State<DetalleProductoScreen> {
-  void _mostrarDialogoAgregarInsumo(BuildContext context, AppState state, Producto producto) {
+  void _mostrarDialogoAgregarInsumo(
+    BuildContext context,
+    AppState state,
+    Producto producto,
+  ) {
     String? selectedInsumoId;
     final cantidadCtrl = TextEditingController();
-    
+
     // Filtrar los insumos que ya están en el producto
     final insumosDisponibles = state.insumos.where((i) {
       return !producto.items.any((item) => item.insumoId == i.id);
@@ -23,7 +27,9 @@ class _DetalleProductoScreenState extends State<DetalleProductoScreen> {
 
     if (insumosDisponibles.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Ya se agregaron todos los insumos disponibles.')),
+        const SnackBar(
+          content: Text('Ya se agregaron todos los insumos disponibles.'),
+        ),
       );
       return;
     }
@@ -65,7 +71,9 @@ class _DetalleProductoScreenState extends State<DetalleProductoScreen> {
                         labelText: 'Cantidad usada por producto',
                         suffixText: insumoEnfocado?.unidad ?? '',
                       ),
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
                     ),
                   ],
                 ),
@@ -81,9 +89,13 @@ class _DetalleProductoScreenState extends State<DetalleProductoScreen> {
                     if (cantidad <= 0 || selectedInsumoId == null) return;
 
                     final updatedUrl = producto.copyWith(
-                      items: List.from(producto.items)..add(
-                        ItemReceta(insumoId: selectedInsumoId!, cantidadUsada: cantidad)
-                      ),
+                      items: List.from(producto.items)
+                        ..add(
+                          ItemReceta(
+                            insumoId: selectedInsumoId!,
+                            cantidadUsada: cantidad,
+                          ),
+                        ),
                     );
                     state.updateProducto(updatedUrl);
                     Navigator.pop(ctx);
@@ -92,16 +104,23 @@ class _DetalleProductoScreenState extends State<DetalleProductoScreen> {
                 ),
               ],
             );
-          }
+          },
         );
       },
     );
   }
 
-  void _mostrarDialogoEditarInsumo(BuildContext context, AppState state, Producto producto, ItemReceta item) {
-    final cantidadCtrl = TextEditingController(text: item.cantidadUsada.toString());
+  void _mostrarDialogoEditarInsumo(
+    BuildContext context,
+    AppState state,
+    Producto producto,
+    ItemReceta item,
+  ) {
+    final cantidadCtrl = TextEditingController(
+      text: item.cantidadUsada.toString(),
+    );
     final insumoEnfocado = state.getInsumoById(item.insumoId);
-    
+
     if (insumoEnfocado == null) return;
 
     showDialog(
@@ -119,12 +138,14 @@ class _DetalleProductoScreenState extends State<DetalleProductoScreen> {
           ),
           actions: [
             TextButton(
-               onPressed: () {
-                 final updatedItems = producto.items.where((i) => i.insumoId != item.insumoId).toList();
-                 state.updateProducto(producto.copyWith(items: updatedItems));
-                 Navigator.pop(ctx);
-               },
-               child: const Text('Quitar', style: TextStyle(color: Colors.red)),
+              onPressed: () {
+                final updatedItems = producto.items
+                    .where((i) => i.insumoId != item.insumoId)
+                    .toList();
+                state.updateProducto(producto.copyWith(items: updatedItems));
+                Navigator.pop(ctx);
+              },
+              child: const Text('Quitar', style: TextStyle(color: Colors.red)),
             ),
             TextButton(
               onPressed: () => Navigator.pop(ctx),
@@ -163,7 +184,10 @@ class _DetalleProductoScreenState extends State<DetalleProductoScreen> {
         );
 
         if (producto.id.isEmpty) {
-          return Scaffold(appBar: AppBar(), body: const Center(child: Text('Error: Producto no encontrado.')));
+          return Scaffold(
+            appBar: AppBar(),
+            body: const Center(child: Text('Error: Producto no encontrado.')),
+          );
         }
 
         double costoTotalProducto = 0.0;
@@ -188,9 +212,19 @@ class _DetalleProductoScreenState extends State<DetalleProductoScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('Receta Final', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    const Text(
+                      'Receta Final',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     ElevatedButton.icon(
-                      onPressed: () => _mostrarDialogoAgregarInsumo(context, state, producto),
+                      onPressed: () => _mostrarDialogoAgregarInsumo(
+                        context,
+                        state,
+                        producto,
+                      ),
                       icon: const Icon(Icons.add),
                       label: const Text('Agregar Insumo'),
                     ),
@@ -202,31 +236,42 @@ class _DetalleProductoScreenState extends State<DetalleProductoScreen> {
                   scrollDirection: Axis.horizontal,
                   child: SingleChildScrollView(
                     child: DataTable(
-                      headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
+                      headingRowColor: MaterialStateProperty.all(
+                        Colors.grey[200],
+                      ),
                       columns: const [
                         DataColumn(label: Text('Ingrediente')),
                         DataColumn(label: Text('Envase'), numeric: true),
                         DataColumn(label: Text('Costo (\$)'), numeric: true),
-                        DataColumn(label: Text('Rendimiento (Cant)'), numeric: true),
-                        DataColumn(label: Text('Costo / u. (\$)'), numeric: true),
+                        DataColumn(
+                          label: Text('Rendimiento (Cant)'),
+                          numeric: true,
+                        ),
+                        DataColumn(
+                          label: Text('Costo / u. (\$)'),
+                          numeric: true,
+                        ),
                         DataColumn(label: Text('Acción')),
                       ],
                       rows: producto.items.map((item) {
                         final insumo = state.getInsumoById(item.insumoId);
                         if (insumo == null) {
-                          return const DataRow(cells: [
-                            DataCell(Text('Insumo eliminado')),
-                            DataCell(Text('-')),
-                            DataCell(Text('-')),
-                            DataCell(Text('-')),
-                            DataCell(Text('-')),
-                            DataCell(Text('-')),
-                          ]);
+                          return const DataRow(
+                            cells: [
+                              DataCell(Text('Insumo eliminado')),
+                              DataCell(Text('-')),
+                              DataCell(Text('-')),
+                              DataCell(Text('-')),
+                              DataCell(Text('-')),
+                              DataCell(Text('-')),
+                            ],
+                          );
                         }
 
                         // Matemáticas:
                         // Rendimiento = envase / cantidadUsada
-                        final rendimiento = insumo.cantidadEnvase / item.cantidadUsada;
+                        final rendimiento =
+                            insumo.cantidadEnvase / item.cantidadUsada;
                         // Costo Unitario = Costo Envase / Rendimiento
                         final costoUnitario = insumo.costoEnvase / rendimiento;
                         costoTotalProducto += costoUnitario; // Para el total
@@ -234,14 +279,27 @@ class _DetalleProductoScreenState extends State<DetalleProductoScreen> {
                         return DataRow(
                           cells: [
                             DataCell(Text(insumo.nombre)),
-                            DataCell(Text('${insumo.cantidadEnvase.toStringAsFixed(1)} ${insumo.unidad}')),
-                            DataCell(Text(insumo.costoEnvase.toStringAsFixed(2))),
-                            DataCell(Text(rendimiento.round().toString())), // as per user's example
+                            DataCell(
+                              Text(
+                                '${insumo.cantidadEnvase.toStringAsFixed(1)} ${insumo.unidad}',
+                              ),
+                            ),
+                            DataCell(
+                              Text(insumo.costoEnvase.toStringAsFixed(2)),
+                            ),
+                            DataCell(
+                              Text(rendimiento.round().toString()),
+                            ), // as per user's example
                             DataCell(Text(costoUnitario.toStringAsFixed(3))),
                             DataCell(
                               IconButton(
                                 icon: const Icon(Icons.edit, size: 20),
-                                onPressed: () => _mostrarDialogoEditarInsumo(context, state, producto, item),
+                                onPressed: () => _mostrarDialogoEditarInsumo(
+                                  context,
+                                  state,
+                                  producto,
+                                  item,
+                                ),
                               ),
                             ),
                           ],
@@ -259,11 +317,18 @@ class _DetalleProductoScreenState extends State<DetalleProductoScreen> {
                   children: [
                     const Text(
                       'Costo Total de Producción (1 u.):',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     Text(
                       '\$${costoTotalProducto.toStringAsFixed(3)}',
-                      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.teal),
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.teal,
+                      ),
                     ),
                   ],
                 ),

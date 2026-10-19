@@ -17,7 +17,9 @@ class ProductosScreen extends StatelessWidget {
         title: const Text('Nuevo Producto'),
         content: TextField(
           controller: nombreCtrl,
-          decoration: const InputDecoration(labelText: 'Nombre (ej. Helado de Fresa)'),
+          decoration: const InputDecoration(
+            labelText: 'Nombre (ej. Helado de Fresa)',
+          ),
           textCapitalization: TextCapitalization.words,
         ),
         actions: [
@@ -35,17 +37,18 @@ class ProductosScreen extends StatelessWidget {
                 nombre: valNombre,
                 items: [],
               );
-              
+
               state.addProducto(nuevoProducto);
               Navigator.pop(ctx);
-              
+
               // Navegar al detalle para que puedan armarlo inmediatamente
               // Note: we fetch the newly added producto (last in list)
               final recienAgregado = state.productos.last;
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => DetalleProductoScreen(productoId: recienAgregado.id),
+                  builder: (_) =>
+                      DetalleProductoScreen(productoId: recienAgregado.id),
                 ),
               );
             },
@@ -59,9 +62,7 @@ class ProductosScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Productos / Recetas'),
-      ),
+      appBar: AppBar(title: const Text('Productos / Recetas')),
       body: Consumer<AppState>(
         builder: (context, state, child) {
           final productos = state.productos;
@@ -86,7 +87,8 @@ class ProductosScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => DetalleProductoScreen(productoId: producto.id),
+                      builder: (_) =>
+                          DetalleProductoScreen(productoId: producto.id),
                     ),
                   );
                 },
